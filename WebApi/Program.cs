@@ -1,16 +1,17 @@
 using WebApi.Context;
 using WebApi.Contracts;
-using WebApplication3.Repository;
+using WebApi.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddSingleton<DapperContext>();
-builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
 
+// Register your database context and repository for FootballTeam and Player.
+builder.Services.AddSingleton<DapperContext>();
+builder.Services.AddScoped<IFootballTeamRepository, FootballTeamRepository>();
+
+// Configure Swagger/OpenAPI.
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -24,9 +25,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
 
+// Map your controllers, which should now be in FootballTeamsController.
 app.MapControllers();
 
 app.Run();
