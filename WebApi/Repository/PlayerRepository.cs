@@ -7,11 +7,11 @@ using WebApi.Entities;
 
 namespace WebApi.Repository
 {
-    public class FootballTeamRepository : IFootballTeamRepository
+    public class PlayerRepository : IPlayerRepository
     {
         private readonly string _connectionString;
 
-        public FootballTeamRepository(string connectionString = "Host=localhost;Port=5432;Database=Football;Username=postgres;Password=29022004bd;")
+        public PlayerRepository(string connectionString = "Host=localhost;Port=5432;Database=Football;Username=postgres;Password=29022004bd;")
         {
             _connectionString = connectionString;
         }
@@ -21,70 +21,62 @@ namespace WebApi.Repository
             return new NpgsqlConnection(_connectionString);
         }
 
-        public async Task<IEnumerable<FootballTeam>> GetTeams()
+        public async Task<IEnumerable<Player>> GetPlayers()
         {
             using (var connection = CreateConnection())
             {
                 connection.Open();
-                var query = "SELECT TeamId, TeamName, TeamCountry, TeamCountryRegion FROM FootballTeam";
-                return await connection.QueryAsync<FootballTeam>(query);
+                var query = "SELECT PlayerId, PlayerName, PlayerSurname, PlayerAge, TeamName, PlayerCountry, PlayerPosition, PlayerCostInMillions, TeamNameId FROM Player";
+                return await connection.QueryAsync<Player>(query);
             }
         }
 
-        public async Task<FootballTeam> GetTeam(int id)
+        public async Task<Player> GetPlayer(int id)
         {
             using (var connection = CreateConnection())
             {
                 connection.Open();
-                var query = "SELECT * FROM FootballTeam WHERE TeamId = @TeamId";
-                return await connection.QueryFirstOrDefaultAsync<FootballTeam>(query, new { TeamId = id });
+                var query = "SELECT * FROM Player WHERE PlayerId = @PlayerId";
+                return await connection.QueryFirstOrDefaultAsync<Player>(query, new { PlayerId = id });
             }
         }
 
-        public async Task<FootballTeam> CreateTeam(FootballTeamForCreationDto team)
+        public async Task<Player> CreatePlayer(FootballPlayerForCreationDto player)
         {
             using (var connection = CreateConnection())
             {
                 connection.Open();
-                var query = "INSERT INTO FootballTeam (TeamName, TeamCountry, TeamCountryRegion) " +
-                            "VALUES (@TeamName, @TeamCountry, @TeamCountryRegion) RETURNING TeamId";
-                return await connection.QueryFirstOrDefaultAsync<FootballTeam>(query, team);
-            }
-        }
-        public async Task UpdateTeam(int id, FootballTeamForUpdateDto team)
-        {
-            using (var connection = CreateConnection())
-            {
-                connection.Open();
-                var query = "UPDATE FootballTeam SET TeamName = @TeamName, TeamCountry = @TeamCountry, " +
-                            "TeamCountryRegion = @TeamCountryRegion WHERE TeamId = @TeamId";
-                await connection.ExecuteAsync(query, new { TeamId = id, team.TeamName, team.TeamCountry, team.TeamCountryRegion});
+                var query = "INSERT INTO Player (PlayerName, PlayerSurname, PlayerAge, TeamName, PlayerCountry, PlayerPosition, PlayerCostInMillions, TeamNameId) " +
+                            "VALUES (@PlayerName, @PlayerSurname, @PlayerAge, @TeamName, @PlayerCountry, @PlayerPosition, @PlayerCostInMillions, @TeamNameId) RETURNING PlayerId";
+                return await connection.QueryFirstOrDefaultAsync<Player>(query, player);
             }
         }
 
-            public async Task DeleteTeam(int id)
+        public async Task UpdatePlayer(int id, FootballPlayerForUpdateDto player)
         {
             using (var connection = CreateConnection())
             {
                 connection.Open();
-                var query = "DELETE FROM FootballTeam WHERE TeamId = @TeamId";
-                await connection.ExecuteAsync(query, new { TeamId = id });
+                var query = "UPDATE Player SET PlayerName = @PlayerName, PlayerAge = @PlayerAge, TeamName = @TeamName, PlayerCountry = @PlayerCountry, PlayerPosition = @PlayerPosition, PlayerCostInMillions = @PlayerCostInMillions, TeamNameId = @TeamNameId " +
+            "WHERE PlayerId = @PlayerId";
+
+                await connection.ExecuteAsync(query, new { PlayerId = id, player.PlayerName, player.PlayerSurname, player.PlayerAge, player.TeamName, player.PlayerCountry, player.PlayerPosition, player.PlayerCostInMillions, player.TeamNameId });
             }
         }
 
-        public async Task<FootballTeam> GetTeamByPlayerId(int playerId)
+        public async Task DeletePlayer(int id)
         {
             using (var connection = CreateConnection())
             {
                 connection.Open();
-                var query = "SELECT t.TeamId, t.TeamName, t.TeamCountry, t.TeamCountryRegion " +
-             "FROM FootballTeam t " +
-             "WHERE t.TeamId = (SELECT TeamNameId FROM Player WHERE PlayerId = @PlayerId)";
-                return await connection.QueryFirstOrDefaultAsync<FootballTeam>(query, new { PlayerId = playerId });
+                var query = "DELETE FROM Player WHERE PlayerId = @PlayerId";
+                await connection.ExecuteAsync(query, new { PlayerId = id });
             }
         }
 
-        
+
+
+
         /*public async Task<List<FootballTeam>> GetTeamsPlayersMultipleMapping()
         {
             using (var connection = CreateConnection())
@@ -123,7 +115,7 @@ namespace WebApi.Repository
             }
         }*/
 
-       
+
 
     }
 }

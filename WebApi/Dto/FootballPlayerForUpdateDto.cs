@@ -1,10 +1,11 @@
-﻿using WebApi.Entities;
+﻿using System.Text.Json.Serialization;
+using WebApi.Entities;
 
 namespace WebApi.Dto
 {
     public class FootballPlayerForUpdateDto
     {
-        public int PlayerId { get; set; }
+        [JsonIgnore] public int PlayerId { get; set; }
         public string PlayerName { get; set; }
         public string PlayerSurname { get; set; }
         public int PlayerAge { get; set; }
