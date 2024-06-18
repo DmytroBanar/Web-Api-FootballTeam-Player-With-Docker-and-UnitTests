@@ -7,11 +7,11 @@ namespace WebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class PlayersController : ControllerBase
+    public class PlayerController : ControllerBase
     {
         private readonly IPlayerRepository _teamRepo;
 
-        public PlayersController(IPlayerRepository teamRepo)
+        public PlayerController(IPlayerRepository teamRepo)
         {
             _teamRepo = teamRepo;
         }
